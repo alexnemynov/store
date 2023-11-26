@@ -5,6 +5,9 @@ class ProductCategory(models.Model):
     name = models.CharField(max_length=128, unique=True)  # макс длина в символах; поля уникальны
     description = models.TextField(null=True, blank=True)  # два способа задать пуст стр; поле Discription может быть пустым
 
+    def __str__(self):
+        return self.name
+
 
 class Product(models.Model):
     name = models.CharField(max_length=256)
