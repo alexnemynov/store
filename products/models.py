@@ -16,3 +16,6 @@ class Product(models.Model):
     quantity = models.PositiveIntegerField(default=0)  # только положительные значения; по умолчанию 0
     image = models.ImageField(upload_to='products_images')  # папка для сохранения изображений
     category = models.ForeignKey(to=ProductCategory, on_delete=models.CASCADE)  # ссылка на внешний ключ; каскадное удаление
+
+    def __str__(self):
+        return f'продукт: {self.name} | Категория: {self.category.name}'
