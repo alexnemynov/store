@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from products.models import ProductCategory, Product, Basket
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 
 
 # Create your views here.
@@ -12,12 +13,15 @@ def index(request):
     return render(request, 'products/index.html', context)
 
 
-def products(request, category_id=None):
-    products = Product.objects.filter(category_id=category_id) if category_id else Product.objects.all()
+def products(request, category_id=0, page_num=1):
+    products = Product.objects.filter(category_id=category_id).order_by('id') if category_id else Product.objects.all().order_by('id')
+    paginator = Paginator(object_list=products, per_page=3)
+    products_paginator = paginator.page(number=page_num)
     context = {
         'title': 'Store - Каталог',
         'categories': ProductCategory.objects.all(),
-        'products': products,
+        'products': products_paginator,
+        'selected_cat': category_id
     }
     return render(request, 'products/products.html', context)
 
