@@ -13,20 +13,20 @@ The project for study Django.
 Для тех, у кого Windows
 
 ##### переход в папку store-server:
-c:\course\store-server\
+$ cd c:\course\store-server\
 
 ##### создание виртуального окружения:
-c:\course\store-server>python -m venv venv
+$ c:\course\store-server>python -m venv venv
 ##### активация окружения:
-c:\course\store-server>venv\Scripts\activate.bat
+$ c:\course\store-server>venv\Scripts\activate.bat
 ##### установка зависимостей:
-(venv) c:\course\store-server>pip install requests
+$ (venv) c:\course\store-server>pip install requests
 ##### команда установки LTS-версии джанги:
-pip install django==4.2.7 
+$ pip install django==4.2.7 
 ##### разворачивание папки с проектом
 $ django-admin startproject store
 
-##### команда обновления pip для удобства)
-python -m pip install --upgrade pip
+##### команда обновления pip для удобства
+$ python -m pip install --upgrade pip
 
 
