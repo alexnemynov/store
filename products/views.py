@@ -3,14 +3,20 @@ from django.http import HttpResponseRedirect
 from products.models import ProductCategory, Product, Basket
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.views.generic.base import TemplateView
 
 
-# Create your views here.
 # Функции = контроллеры = вьюхи
 
-def index(request):
-    context = {'title': 'Store'}
-    return render(request, 'products/index.html', context)
+
+class IndexView(TemplateView):
+    template_name = 'products/index.html'
+
+    def get_context_data(self, **kwargs):  # переопределяем метод get_context_data, чтобы добавить к атрибутам title
+        ''' get_context_data находится в классе ContexMixin, который в свою очередь находится в классе TemplateView '''
+        contex = super(IndexView, self).get_context_data(**kwargs)
+        contex['title'] = 'Store'
+        return contex
 
 
 def products(request, category_id=0, page_num=1):
