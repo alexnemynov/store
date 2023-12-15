@@ -1,12 +1,8 @@
-from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from products.models import ProductCategory, Product, Basket
 from django.contrib.auth.decorators import login_required
 from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
-
-
-# Функции = контроллеры = вьюхи
 
 
 class IndexView(TemplateView):

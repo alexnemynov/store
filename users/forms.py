@@ -1,8 +1,6 @@
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm, get_user_model
 
-
-from users.models import User
 
 class UserLoginForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={
@@ -10,7 +8,7 @@ class UserLoginForm(AuthenticationForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={  # TextInput не скрывается, а PasswordInput скрывается
         'class': 'form-control py-4', 'placeholder': 'Введите пароль'}))
     class Meta:
-        model = User
+        model = get_user_model()  # он будет хватать переменную в settings.py AUTH_USER_MODEL = 'users.User'
         fields = ('username', 'password')
 
 
@@ -28,7 +26,7 @@ class UserRegistrationForm(UserCreationForm):
     password2 = forms.CharField(label='Подтверждение пароля', widget=forms.PasswordInput(attrs={
         'class': 'form-control py-4', 'placeholder': 'Подтвердите пароль'}))
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ('first_name', 'last_name', 'username', 'email', 'password1', 'password2')
 
 
@@ -44,5 +42,5 @@ class UserProfileForm(UserChangeForm):
     email = forms.CharField(label='Адрес электронной почты', widget=forms.EmailInput(attrs={
         'class': 'form-control py-4', 'readonly': True}))
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ('first_name', 'last_name', 'image', 'username', 'email')
