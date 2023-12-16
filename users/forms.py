@@ -14,7 +14,6 @@ class UserLoginForm(AuthenticationForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={  # TextInput не скрывается, а PasswordInput скрывается
         'class': 'form-control py-4', 'placeholder': 'Введите пароль'}))
 
-
     class Meta:
         model = get_user_model()  # он будет хватать переменную в settings.py AUTH_USER_MODEL = 'users.User'
         fields = ('username', 'password')
@@ -34,11 +33,9 @@ class UserRegistrationForm(UserCreationForm):
     password2 = forms.CharField(label='Подтверждение пароля', widget=forms.PasswordInput(attrs={
         'class': 'form-control py-4', 'placeholder': 'Подтвердите пароль'}))
 
-
     class Meta:
         model = get_user_model()
         fields = ('first_name', 'last_name', 'username', 'email', 'password1', 'password2')
-
 
     def save(self, commit=True):
         user = super().save(commit=True)
@@ -60,7 +57,6 @@ class UserProfileForm(UserChangeForm):
         'class': 'form-control py-4', 'readonly': True}))  # только для чтения
     email = forms.CharField(label='Адрес электронной почты', widget=forms.EmailInput(attrs={
         'class': 'form-control py-4', 'readonly': True}))
-
 
     class Meta:
         model = get_user_model()
