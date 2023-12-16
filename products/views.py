@@ -3,23 +3,21 @@ from products.models import ProductCategory, Product, Basket
 from django.contrib.auth.decorators import login_required
 from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
+from common.views import TitleMixin
 
 
-class IndexView(TemplateView):
+class IndexView(TitleMixin, TemplateView):
     template_name = 'products/index.html'
-
-    def get_context_data(self, **kwargs):  # переопределяем метод get_context_data, чтобы добавить к атрибутам title
-        ''' get_context_data находится в классе ContexMixin, который в свою очередь находится в классе TemplateView '''
-        contex = super(IndexView, self).get_context_data(**kwargs)
-        contex['title'] = 'Store'
-        return contex
+    title = 'Store'
 
 
-class ProductsListView(ListView):
+class ProductsListView(TitleMixin, ListView):
     model = Product
     template_name = 'products/products.html'
     context_object_name = "products"  # Чтобы не использовать в шаблоне "object_list", можно переопределить свойство
     paginate_by = 3
+    title = 'Store - Каталог'
+
 
     def get_queryset(self):
         queryset = super(ProductsListView, self).get_queryset()
@@ -29,7 +27,6 @@ class ProductsListView(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(ProductsListView, self).get_context_data(**kwargs)
-        context['title'] = 'Store - Каталог'
         context['categories'] = ProductCategory.objects.all()
         return context
 
