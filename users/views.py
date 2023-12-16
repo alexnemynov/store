@@ -4,55 +4,41 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
 from django.http import HttpResponseRedirect
 from django.views.generic.edit import CreateView, UpdateView
+from django.contrib.auth.views import LoginView
 
 from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
 from products.models import Basket
 
 
-def login(request):
-    if request.method == 'POST':
-        form = UserLoginForm(data=request.POST)
-        if form.is_valid():
-            username = request.POST['username']  # извлекаем данные из POST запроса
-            password = request.POST['password']
-            user = auth.authenticate(username=username, password=password) # извлекаем данные из бд, чтобы проверить, есть ли такой пользователь
-            if user:
-                auth.login(request, user)
-                return HttpResponseRedirect(reverse('index'))  # если логин прошел успешно, то перенаправляем на главную страницу
-                # 'index' - название из path('', index, name='index')... (см. urls.py в главной папке проекта)
-                # можно было просто '/' написать без reverse, но так сохраняется относительный путь
-    else:
-        form = UserLoginForm()
-    context = {'form': form}
-    return render(request, 'users/login.html', context)
+class UserLoginView(LoginView):
+    template_name = 'users/login.html'
+    form_class = UserLoginForm
+
+
+    def get_success_url(self):
+        return reverse_lazy('index')
 
 
 class UserRegistrationView(CreateView):
     form_class = UserRegistrationForm
     template_name = 'users/registration.html'
     success_url = reverse_lazy('users:login')
-    extra_context = {'title': 'Регистрация'}
+    extra_context = {'title': 'Store - Регистрация'}
 
 
 class UserProfileView(LoginRequiredMixin, UpdateView):
     form_class = UserProfileForm
     template_name = 'users/profile.html'
     success_url = reverse_lazy('users:profile')
-    extra_context = {'title': 'Личный кабинет'}
+    extra_context = {'title': 'Store - Личный кабинет'}
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Store - Личный кабинет'
         context['baskets'] = Basket.objects.filter(user=self.request.user)  # можно user=self.object
         return context
 
     def get_object(self, queryset=None):  # вместо profile/<int:pk>, а остальное под "капотом" делается
         return self.request.user
-
-
-def logout(request):
-    auth.logout(request)
-    return HttpResponseRedirect(reverse('index'))
 
 
 # def registration(request):
