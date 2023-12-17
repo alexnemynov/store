@@ -2,7 +2,8 @@ import uuid
 from datetime import timedelta
 
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm, get_user_model
+from django.contrib.auth.forms import (AuthenticationForm, UserChangeForm,
+                                       UserCreationForm, get_user_model)
 from django.utils.timezone import now
 
 from .models import EmailVerification
@@ -47,7 +48,7 @@ class UserRegistrationForm(UserCreationForm):
 
 
 class UserProfileForm(UserChangeForm):
-    first_name = forms.CharField(label='Имя', widget=forms.TextInput(attrs={  # тут нет placeholder, тк данные заполнены!
+    first_name = forms.CharField(label='Имя', widget=forms.TextInput(attrs={  # тут нет placeholder, тк данные заполн
         'class': 'form-control py-4'}))
     last_name = forms.CharField(label='Фамилия', widget=forms.TextInput(attrs={
         'class': 'form-control py-4'}))

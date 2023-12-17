@@ -1,8 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from products.models import ProductCategory, Product, Basket
-
+from products.models import Basket, Product, ProductCategory
 
 admin.site.register(ProductCategory)
 
@@ -10,7 +9,7 @@ admin.site.register(ProductCategory)
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'price', 'quantity', 'category')  # поле отвечает за то, какие поля показать в админке
-    fields = ('name', 'description', ('price', 'quantity'), 'image', 'category')  # какие поля будут по клику. можно на одной строке
+    fields = ('name', 'description', ('price', 'quantity'), 'image', 'category')  # какие поля будут по клику.
     readonly_fields = ('description',)  # какие-то поля только для чтения
     search_fields = ('name',)  # добавить поиск по определенным полям
     ordering = ('name',)
