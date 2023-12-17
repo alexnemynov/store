@@ -34,12 +34,6 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('users:profile')
     extra_context = {'title': 'Store - Личный кабинет'}
 
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['baskets'] = Basket.objects.filter(user=self.request.user)  # можно user=self.object
-        return context
-
     def get_object(self, queryset=None):  # вместо profile/<int:pk>, а остальное под "капотом" делается
         return self.request.user
 
