@@ -1,5 +1,5 @@
-from django import setup
-setup()
+# from django import setup
+# setup()
 
 from http import HTTPStatus
 
@@ -7,6 +7,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from products.models import Product, ProductCategory
+
 
 class IndexViewTestCase(TestCase):
 
@@ -18,10 +19,11 @@ class IndexViewTestCase(TestCase):
         self.assertEqual(response.context_data['title'], 'Store')  # какой заголовок используется
         self.assertTemplateUsed(response, 'products/index.html')  # какой шаблон используется
 
+
 class ProdcutsListViewTestCase(TestCase):
     fixtures = ['categories.json', 'goods.json']
 
-    def setUp(self):  #  обьявляем тут переменные, необходимые в тестах
+    def setUp(self):  # обьявляем тут переменные, необходимые в тестах
         self.products = Product.objects.all()
 
     def test_list(self):
