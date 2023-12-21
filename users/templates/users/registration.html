@@ -23,18 +23,18 @@
                                 <form action="{% url 'users:registration' %}" method="post">
                                     {% csrf_token %}
 
+                                    <div class="form-row">
                                     {% for elem in form %}
-                                        <div class="form-row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="small mb-1" for="{{ elem.id_for_label }}">
-                                                        {{ elem.label }}
-                                                    </label>
-                                                    {{ elem }}
-                                                </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="small mb-1" for="{{ elem.id_for_label }}">
+                                                    {{ elem.label }}
+                                                </label>
+                                                {{ elem }}
                                             </div>
                                         </div>
                                     {% endfor %}
+                                    </div>
 
                                     <div class="form-group mt-4 mb-0">
                                         <input class="btn btn-primary btn-block" type="submit" value="Создать аккаунт">
