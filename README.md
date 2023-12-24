@@ -29,4 +29,10 @@ $ django-admin startproject store
 ##### команда обновления pip для удобства
 $ python -m pip install --upgrade pip
 
+##### Чтобы в локальном проекте работало кэширование, нужно установить Redis и запустить его из консоли командой ниже
+https://youtu.be/DLKzd3bvgt8?si=ziyZpM_9TSNZlYyv
+$ redis-server
+
+##### Для запуска Celery на Windows, для остановки - Ctrl+C 
+$ celery -A store worker -l INFO -P solo
 

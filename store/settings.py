@@ -178,6 +178,7 @@ EMAIL_USE_SSL = False
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # OAuth
+
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
@@ -186,6 +187,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # Provider specific settings
+
 SOCIALACCOUNT_PROVIDERS = {
     'github': {
         'SCOPE': [
@@ -196,3 +198,8 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
     }
 }
+
+# Celery
+
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
