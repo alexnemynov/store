@@ -1,7 +1,10 @@
+import uuid
+
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
 from .forms import OrderForm
 
+from yookassa import Configuration, Payment
 
 class OrderCreateView(CreateView):
     template_name = 'orders/order-create.html'
