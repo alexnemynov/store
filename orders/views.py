@@ -1,6 +1,8 @@
 import uuid
+import json
 
 from yookassa import Configuration, Payment
+from yookassa.domain.notification import WebhookNotificationEventType, WebhookNotificationFactory
 
 from http import HTTPStatus
 
@@ -8,11 +10,12 @@ from django.views.generic.edit import CreateView
 from django.views.generic.base import TemplateView
 from django.urls import reverse, reverse_lazy
 from django.conf import settings
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 
 from .forms import OrderForm
 from products.models import Basket
-
+from .models import Order
 
 Configuration.account_id = settings.YOOKASSA_ACCOUNT_ID
 Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
@@ -44,9 +47,7 @@ class OrderCreateView(CreateView):
                 'type': 'redirect',
                 'return_url': '{}{}'.format(settings.DOMAIN_NAME, reverse('orders:order_success'))
             },
-            # 'metadata': {'name': name,
-            #              'quantity': quantity,
-            #              'price': price},
+            'metadata': {'order_id': self.object.id},
             'capture': True,
             'description': f'Заказ №{self.object.id}'
         }, uuid.uuid4())
@@ -58,3 +59,79 @@ class OrderCreateView(CreateView):
         return super().form_valid(form)
 
 
+@csrf_exempt  # данный декоратор убирает необходимость того, что нужно передавать csrf токен
+def yookassa_webhook_view(request):
+    # Извлечение JSON объекта из тела запроса
+    event_json = json.loads(request.body)
+    try:
+        # Создание объекта класса уведомлений в зависимости от события
+        notification_object = WebhookNotificationFactory().create(event_json)
+        response_object = notification_object.object
+        if notification_object.event == WebhookNotificationEventType.PAYMENT_SUCCEEDED:
+            session = {
+                'paymentId': response_object.id,
+                'paymentStatus': response_object.status,
+                'metadata': response_object.metadata
+            }
+            # session = notification_object['object']
+            fullfill_order(session)
+
+        elif notification_object.event == WebhookNotificationEventType.PAYMENT_WAITING_FOR_CAPTURE:
+            some_data = {
+                'paymentId': response_object.id,
+                'paymentStatus': response_object.status,
+            }
+            # Специфичная логика
+
+        elif notification_object.event == WebhookNotificationEventType.PAYMENT_CANCELED:
+            some_data = {
+                'paymentId': response_object.id,
+                'paymentStatus': response_object.status,
+            }
+            # Специфичная логика
+
+        elif notification_object.event == WebhookNotificationEventType.REFUND_SUCCEEDED:
+            some_data = {
+                'refundId': response_object.id,
+                'refundStatus': response_object.status,
+                'paymentId': response_object.payment_id,
+            }
+            # Специфичная логика
+
+        elif notification_object.event == WebhookNotificationEventType.DEAL_CLOSED:
+            some_data = {
+                'dealId': response_object.id,
+                'dealStatus': response_object.status,
+            }
+            # Специфичная логика
+
+        elif notification_object.event == WebhookNotificationEventType.PAYOUT_SUCCEEDED:
+            some_data = {
+                'payoutId': response_object.id,
+                'payoutStatus': response_object.status,
+                'dealId': response_object.deal.id,
+            }
+            # Специфичная логика
+
+        elif notification_object.event == WebhookNotificationEventType.PAYOUT_CANCELED:
+            some_data = {
+                'payoutId': response_object.id,
+                'payoutStatus': response_object.status,
+                'dealId': response_object.deal.id,
+            }
+            # Специфичная логика
+
+        else:
+            # Обработка ошибок
+            return HttpResponse(status=400)  # Сообщаем кассе об ошибке
+
+    except Exception:
+        # Обработка ошибок
+        return HttpResponse(status=400)  # Сообщаем кассе об ошибке
+
+    return HttpResponse(status=200)  # Сообщаем кассе, что все хорошо
+
+
+def fullfill_order(session):
+    order_id = session['metadata']['order_id']
+    print(order_id)
