@@ -37,10 +37,11 @@ class OrderCreateView(CreateView):
 
     def post(self, request, *args, **kwargs):
         super(OrderCreateView, self).post(request, *args, **kwargs)  # выполняется логика, которая создает order
+        baskets = Basket.objects.filter(user=self.request.user)
 
         payment = Payment.create({
             'amount': {
-                'value': f'{Basket.objects.total_sum()}',
+                'value': f'{baskets.total_sum()}',
                 'currency': 'RUB'
             },
             'confirmation': {
@@ -66,7 +67,7 @@ def yookassa_webhook_view(request):
     try:
         # Создание объекта класса уведомлений в зависимости от события
         notification_object = WebhookNotificationFactory().create(event_json)
-        response_object = notification_object.object
+        response_object = notification_object.object   # Получите объект платежа
         if notification_object.event == WebhookNotificationEventType.PAYMENT_SUCCEEDED:
             session = {
                 'paymentId': response_object.id,
