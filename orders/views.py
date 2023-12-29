@@ -135,4 +135,5 @@ def yookassa_webhook_view(request):
 
 def fullfill_order(session):
     order_id = session['metadata']['order_id']
-    print(order_id)
+    order = Order.objects.get(id=order_id)
+    order.update_after_payment()
