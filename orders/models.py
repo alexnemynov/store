@@ -20,10 +20,13 @@ class Order(models.Model):
     last_name = models.CharField(max_length=64)
     email = models.EmailField(max_length=256)
     address = models.CharField(max_length=256)
-    basket_history = models.JSONField(default=dict)  # нельзя ссылаться на другие модели, чтобы поле не обновлялась
+    basket_history = models.JSONField(default=dict)  # нельзя ссылаться на другие модели, чтобы поле не обновлялось
     created = models.DateTimeField(auto_now_add=True)
     status = models.PositiveIntegerField(choices=STATUSES, default=CREATED)
     initiator = models.ForeignKey(User, on_delete=models.CASCADE)  # если удалился пользователь, и заказа тоже удаляем
+
+    class Meta:
+        ordering = ['-created']
 
     def __str__(self):
         return f'Order #{self.id}. {self.first_name} {self.last_name}'

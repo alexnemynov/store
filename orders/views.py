@@ -8,6 +8,7 @@ from http import HTTPStatus
 
 from django.views.generic.edit import CreateView
 from django.views.generic.base import TemplateView
+from django.views.generic.list import ListView
 from django.urls import reverse, reverse_lazy
 from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponse
@@ -27,6 +28,17 @@ class SuccessTemplateView(TemplateView):
 
 class CancelTemplateView(TemplateView):
     template_name = 'orders/cancel.html'  # заглушка
+
+
+class OrderListView(ListView):
+    template_name = 'orders/orders.html'
+    extra_context = {'title': 'Store - Заказы'}
+    context_object_name = "orders"  # Чтобы не использовать в шаблоне "object_list"
+    queryset = Order.objects.all()
+
+    def get_queryset(self):
+        queryset = super(OrderListView, self).get_queryset()
+        return queryset.filter(initiator=self.request.user)
 
 
 class OrderCreateView(CreateView):
@@ -74,7 +86,6 @@ def yookassa_webhook_view(request):
                 'paymentStatus': response_object.status,
                 'metadata': response_object.metadata
             }
-            # session = notification_object['object']
             fullfill_order(session)
 
         elif notification_object.event == WebhookNotificationEventType.PAYMENT_WAITING_FOR_CAPTURE:
