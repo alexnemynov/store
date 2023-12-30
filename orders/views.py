@@ -1,25 +1,27 @@
-import uuid
 import json
-
-from yookassa import Configuration, Payment
-from yookassa.domain.notification import WebhookNotificationEventType, WebhookNotificationFactory
-
+import uuid
 from http import HTTPStatus
 
-from django.views.generic.edit import CreateView
-from django.views.generic.base import TemplateView
-from django.views.generic.list import ListView
-from django.urls import reverse, reverse_lazy
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic.base import TemplateView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView
+from django.views.generic.list import ListView
+from yookassa import Configuration, Payment
+from yookassa.domain.notification import (WebhookNotificationEventType,
+                                          WebhookNotificationFactory)
+
+from products.models import Basket
 
 from .forms import OrderForm
-from products.models import Basket
 from .models import Order
 
 Configuration.account_id = settings.YOOKASSA_ACCOUNT_ID
 Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
+
 
 class SuccessTemplateView(TemplateView):
     template_name = 'orders/success.html'
@@ -39,6 +41,16 @@ class OrderListView(ListView):
     def get_queryset(self):
         queryset = super(OrderListView, self).get_queryset()
         return queryset.filter(initiator=self.request.user)
+
+
+class OrderDetailView(DetailView):
+    template_name = 'orders/order.html'
+    model = Order  # используем для отображения данных либо queryset(список обьектов), либо саму модель
+
+    def get_context_data(self, **kwargs):
+        context = super(OrderDetailView, self).get_context_data(**kwargs)
+        context['title'] = f'Store - Заказ №{self.object.id}'
+        return context
 
 
 class OrderCreateView(CreateView):
