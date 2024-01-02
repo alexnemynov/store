@@ -12,24 +12,61 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
+import environ
+
+env = environ.Env(
+    DEBUG=(bool),
+
+    SECRET_KEY=(str),
+
+    NGROK_HOST=(str),
+
+    DOMAIN_NAME=(str),
+
+    REDIS_HOST=(str),
+    REDIS_PORT=(str),
+
+    DATABASE_NAME=(str),
+    DATABASE_USER=(str),
+    DATABASE_PASSWORD=(str),
+    DATABASE_HOST=(str),
+    DATABASE_PORT=(str),
+
+    EMAIL_HOST=(str),
+    EMAIL_PORT=(int),
+    EMAIL_HOST_USER=(str),
+    EMAIL_HOST_PASSWORD=(str),
+    EMAIL_USE_TLS=(bool),
+    EMAIL_USE_SSL=(bool),
+
+    YOOKASSA_ACCOUNT_ID=(int),
+    YOOKASSA_SECRET_KEY=(str)
+)
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Take environment variables from .env file
+environ.Env.read_env(BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%-5ab8a9d$nck=bv%6dp(i6i%k9qjuo8!p%e_(7o#q#2mswt5+'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['e945-46-188-115-123.ngrok-free.app', 'localhost', '127.0.0.1', 'testserver']
+# ngrok
 
-CSRF_TRUSTED_ORIGINS = ['https://e945-46-188-115-123.ngrok-free.app']
+NGROK_HOST = env('NGROK_HOST')
 
-DOMAIN_NAME = 'http://127.0.0.1:8000'
+ALLOWED_HOSTS = [NGROK_HOST, 'localhost', '127.0.0.1', 'testserver']
+
+CSRF_TRUSTED_ORIGINS = [f'https://{NGROK_HOST}']
+
+DOMAIN_NAME = env('DOMAIN_NAME')
 
 # Application definition
 
@@ -92,10 +129,17 @@ INTERNAL_IPS = [
     'localhost',
 ]
 
+# Redis
+
+REDIS_HOST = env('REDIS_HOST')
+REDIS_PORT = env('REDIS_PORT')
+
+# CACHES
+
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/1',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
@@ -108,11 +152,11 @@ CACHES = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'store_db',
-        'USER': 'store_username',
-        'PASSWORD': '011235813',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': env('DATABASE_NAME'),
+        'USER': env('DATABASE_USER'),
+        'PASSWORD': env('DATABASE_PASSWORD'),
+        'HOST': env('DATABASE_HOST'),
+        'PORT': env('DATABASE_PORT'),
     }
 }
 
@@ -173,13 +217,15 @@ LOGIN_REDIRECT_URL = 'index'
 
 # Sending emails
 
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'aerohcss@gmail.com'  # your email
-EMAIL_HOST_PASSWORD = 'grpm kzlb sijb ystz'  # your 16-character app password
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_HOST = env('EMAIL_HOST')
+    EMAIL_PORT = env('EMAIL_PORT')
+    EMAIL_HOST_USER = env('EMAIL_HOST_USER')  # your email
+    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')  # your 16-character app password
+    EMAIL_USE_TLS = env('EMAIL_USE_TLS')
+    EMAIL_USE_SSL = env('EMAIL_USE_SSL')
 
 # OAuth
 
@@ -205,10 +251,10 @@ SOCIALACCOUNT_PROVIDERS = {
 
 # Celery
 
-CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
-CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
+CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}'
+CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}'
 
 # Yookassa
 
-YOOKASSA_ACCOUNT_ID = 297843
-YOOKASSA_SECRET_KEY = 'test_ytYDeuz4XKvCtHNefL8T9CsduL8sCAjY6QkZwTNYk3U'
+YOOKASSA_ACCOUNT_ID = env('YOOKASSA_ACCOUNT_ID')
+YOOKASSA_SECRET_KEY = env('YOOKASSA_SECRET_KEY')
