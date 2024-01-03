@@ -58,13 +58,12 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-# ngrok
+ALLOWED_HOSTS = ['*']
 
-NGROK_HOST = env('NGROK_HOST')
-
-ALLOWED_HOSTS = [NGROK_HOST, 'localhost', '127.0.0.1', 'testserver']
-
-CSRF_TRUSTED_ORIGINS = [f'https://{NGROK_HOST}']
+if DEBUG:
+    NGROK_HOST = env('NGROK_HOST')
+    CSRF_TRUSTED_ORIGINS = [f'https://{NGROK_HOST}']
+    ALLOWED_HOSTS.extend([NGROK_HOST, 'localhost', '127.0.0.1', 'testserver'])
 
 DOMAIN_NAME = env('DOMAIN_NAME')
 
@@ -197,9 +196,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static'
-]
+if DEBUG:
+    STATICFILES_DIRS = [
+        BASE_DIR / 'static'
+    ]
+else:
+    
+    STATIC_ROOT = BASE_DIR / 'static'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
