@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
-import environ
+import environ, os
 
 env = environ.Env(
     DEBUG=(bool),
@@ -58,12 +58,14 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 ALLOWED_HOSTS = ['*']
 
-if DEBUG:
-    NGROK_HOST = env('NGROK_HOST')
-    CSRF_TRUSTED_ORIGINS = [f'https://{NGROK_HOST}']
-    ALLOWED_HOSTS.extend([NGROK_HOST, 'localhost', '127.0.0.1', 'testserver'])
+# if DEBUG:
+#     NGROK_HOST = env('NGROK_HOST')
+#     CSRF_TRUSTED_ORIGINS = [f'https://{NGROK_HOST}']
+#     ALLOWED_HOSTS.extend([NGROK_HOST, 'localhost', '127.0.0.1', 'testserver'])
 
 DOMAIN_NAME = env('DOMAIN_NAME')
 
@@ -195,13 +197,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
+
 STATIC_URL = '/static/'
 if DEBUG:
-    STATICFILES_DIRS = [
-        BASE_DIR / 'static'
-    ]
+    STATICFILES_DIRS = (
+        os.path.join(BASE_DIR, 'static'),
+    )
 else:
-    
     STATIC_ROOT = BASE_DIR / 'static'
 
 MEDIA_URL = '/media/'
